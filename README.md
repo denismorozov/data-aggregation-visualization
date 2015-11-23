@@ -1,2 +1,2 @@
-# data-aggregation-visualization
-Data aggregation in sensor networks visualization for Computer Networks class.
+# Data Aggregation in Sensor Networks Visualization
+My project for my Computer Networks class.

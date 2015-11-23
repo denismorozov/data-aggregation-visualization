@@ -1,0 +1,42 @@
+{
+  "name": "data-aggregation-visualization",
+  "version": "1.0.0",
+  "description": "Data aggregation in sensor networks visualization for Computer Networks class",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/denismorozov/data-aggregation-visualization.git"
+  },
+  "keywords": [
+    "data",
+    "aggregation",
+    "visualization",
+    "sensor",
+    "networks",
+    "cytoscape"
+  ],
+  "author": "Denis Morozov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/denismorozov/data-aggregation-visualization/issues"
+  },
+  "homepage": "https://github.com/denismorozov/data-aggregation-visualization#readme",
+  "devDependencies": {
+    "babel-loader": "^5.3.3",
+    "css-loader": "^0.22.0",
+    "style-loader": "^0.13.0",
+    "webpack": "^1.12.3",
+    "webpack-dev-server": "^1.12.1",
+    "webpack-merge": "^0.2.0"
+  },
+  "dependencies": {
+    "array.prototype.findindex": "^1.0.0",
+    "cytoscape": "^2.5.0",
+    "jquery": "^2.1.4",
+    "node-uuid": "^1.4.7"
+  }
+}
