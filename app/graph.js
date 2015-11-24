@@ -18,15 +18,15 @@ export default class Graph {
             style: cytoscape.stylesheet()
                 .selector('node').css({
                     // nice for debugging the layout
-                    'content': 'data(id)'
+                    //'content': 'data(id)'
                 })
                 .selector('.sink').css({
                     'label': 'Sink',
                     'color': 'black;',
-                    'background-color': '#000'
+                    'background-color': '#000',
                 })
                 .selector('.aggregator').css({
-                    'background-color': '#900'
+                    'background-color': '#900',
                 })
                 .selector('edge').css({
                     'width': 4,
@@ -71,7 +71,7 @@ export default class Graph {
         const aggs = this.cy.$('.aggregator, .sink');
 
         // generate new messages
-        for( var i = 0; i < 15; i++ ){
+        for( var i = 0; i < 30; i++ ){
             let random = Math.floor((Math.random() * 100) + 1);
             let dijkstra = this.cy.elements().dijkstra('#' + random.toString(), function(){
                 return this.data('weight');
@@ -85,6 +85,28 @@ export default class Graph {
             }
             this.drawPath( '#' + random.toString(), '#' + closest.id());
         }
+        setTimeout( this.drawPath('#' + this.cy.$('#25').id(), '#' + this.sinkNode.toString()), 10000);
+    }
+
+    /* Helper method to draw a path */
+    drawPath(from, to){
+        var dijkstra = this.cy.elements().dijkstra(from,function(){
+            return this.data('weight');
+        }, false );
+        var path = dijkstra.pathTo( this.cy.$(to) );
+        var x=0;
+        // doesn't check for end
+        var highlightNextEle = function(){
+            var element = path[x];
+            if(!element.hasClass('aggregator') && !element.hasClass('sink')){
+                element.addClass('highlighted');
+            }
+            if(x < path.length - 2){
+                x++;
+                setTimeout(highlightNextEle, 1000);
+            }
+        };
+        highlightNextEle();
     }
 
     /* Create a grid of nodes and makes the center one the sink
@@ -152,24 +174,5 @@ export default class Graph {
             }
         }
         return edges;
-    }
-
-
-    drawPath(from, to){
-        var dijkstra = this.cy.elements().dijkstra(from,function(){
-            return this.data('weight');
-        }, false );
-        var path = dijkstra.pathTo( this.cy.$(to) );
-        var x=0;
-        // doesn't check for end
-        var highlightNextEle = function(){
-            var element = path[x];
-            element.addClass('highlighted');
-            if(x < path.length - 2){
-                x++;
-                setTimeout(highlightNextEle, 1000);
-            }
-        };
-        highlightNextEle();
     }
 }
