@@ -77,7 +77,7 @@ export default class Graph {
         const aggs = this.cy.$('.aggregator, .sink');
 
         // generate new messages
-        for( var i = 0; i < 30; i++ ) {
+        for( var i = 0; i < 15; i++ ) {
             let random = Math.floor((Math.random() * 100) + 1);
             let dijkstra = this.cy.elements().dijkstra('#' + random.toString(), function () {
                 return this.data('weight');
@@ -114,10 +114,10 @@ export default class Graph {
             }
             if(i < path.length - 2){
                 i++;
-                setTimeout(highlightNextEle, 1000);
+                setTimeout(highlightNextEle, 750);
             }
             else if( callback && typeof(callback) === "function" ){
-                setTimeout(callback, 5000);
+                setTimeout(callback, 3000);
             }
         };
         highlightNextEle();
