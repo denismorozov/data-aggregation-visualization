@@ -90,9 +90,10 @@ export default class Graph {
                 }
             }
             this.drawPath('#' + random.toString(), '#' + closest.id(), 'highlight', () => {
-                let aggregs = this.cy.$('.aggregator');
-                for(var k = 0; k < aggregs.length; k++) {
-                    this.drawPath('#' + aggregs[k].id(), '#' + this.sinkNode.toString(), 'highlight-red');
+                for(var k = 0; k < aggs.length; k++) {
+                    if(!aggs[k].hasClass('sink')){
+                        this.drawPath('#' + aggs[k].id(), '#' + this.sinkNode.toString(), 'highlight-red');
+                    }
                 }
             });
         }
