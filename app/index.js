@@ -1,11 +1,17 @@
 import './main.css';
-import 'array.prototype.findindex';
 import Graph from './graph.js';
 
 main();
 
 function main() {
-    const graph = new Graph();
-    //graph.runWithoutAggregation();
-    graph.runWithAggregation();
+    var graph = new Graph();
+    document.getElementById("runNoAggregation").onclick = () => {
+        graph.runWithoutAggregation();
+    };
+    document.getElementById("runAggregation").onclick = () => {
+        graph.runWithAggregation();
+    };
+    document.getElementById("reset").onclick = () => {
+        graph = new Graph();
+    };
 }

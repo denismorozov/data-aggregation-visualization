@@ -96,7 +96,8 @@ export default class Graph {
 
     }
 
-    /* Helper method to draw a path */
+    /* Helper method to draw a path
+    */
     drawPath(from, to, newClass, callback){
         newClass = newClass || 'highlight';
         var dijkstra = this.cy.elements().dijkstra(from,function(){
@@ -104,7 +105,6 @@ export default class Graph {
         }, false );
         var path = dijkstra.pathTo( this.cy.$(to) );
         var i = 0;
-        // doesn't check for end
         var highlightNextEle = function(){
             let element = path[i];
             if(!element.hasClass('aggregator') && !element.hasClass('sink')){
