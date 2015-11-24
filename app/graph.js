@@ -18,10 +18,11 @@ export default class Graph {
             style: cytoscape.stylesheet()
                 .selector('node').css({
                     // nice for debugging the layout
-                    'content': 'data(id)'
+                    // 'content': 'data(id)'
                 })
                 .selector('.sink').css({
-                    'content': 'Sink',
+                    'label': 'Sink',
+                    'color': 'black;',
                     'background-color': '#000'
                 })
                 .selector('.aggregator').css({
@@ -30,14 +31,12 @@ export default class Graph {
                 .selector('edge').css({
                     'width': 4,
                     'line-color': '#ddd',
-                    'target-arrow-color': '#ddd'
                 })
                 .selector('.highlighted').css({
                     'background-color': '#61bffc',
                     'line-color': '#61bffc',
-                    'target-arrow-color': '#61bffc',
-                    'transition-property': 'background-color, line-color, target-arrow-color',
-                    'transition-duration': '0.5s'
+                    'transition-property': 'background-color, line-color',
+                    'transition-duration': '0.5s',
                 }),
             elements: this.data,
             zoomingEnabled: false,
@@ -52,12 +51,21 @@ export default class Graph {
                 //window.Graph.cy = this;
             }
         });
-
-        // add edge for every nearby node
-
-
     }
 
+    /* Generate 15 random messages being sent directly to the sink */
+    runWithoutAggregation(){
+        for( var i = 1; i < 15; i++ ){
+            let random = Math.floor((Math.random() * 100) + 1);
+            this.drawPath( '#' + random.toString(), '#' + this.sinkNode.toString());
+        }
+    };
+
+    runWithAggregation(){
+        //
+    };
+    /* Create a grid of nodes and makes the center one the sink
+    */
     createNodes(){
         var nodes = [];
         for(var i = 1; i <= this.numberOfNodes; i++)
@@ -74,54 +82,50 @@ export default class Graph {
         }
 
         // set the sink node which would be in the middle of the grid by default
-        var sinkNode = Math.floor(this.numberOfNodes/2);
-        nodes[sinkNode] =
+        this.sinkNode = Math.floor(this.numberOfNodes/2);
+        nodes[this.sinkNode] =
         {
             data:
             {
-                id: (++sinkNode).toString(),
+                // this increment is needed to have the proper index
+                id: (++this.sinkNode).toString(),
             },
             classes: 'sink',
         };
         return nodes;
     }
 
-    /* Connecting */
+    /* Connects adjacent nodes together in the grid */
     createEdges(){
+        function createEdge(from, to){
+            let fromID = from.toString();
+            let toID = to.toString();
+            return {
+                data: {
+                    source: fromID,
+                    target: toID,
+                    weight: 5,
+                }
+            };
+        }
+
         var edges = [];
         for(var i = 1; i < this.numberOfNodes; i++)
         {
-            let current = i.toString();
-
-            // if its not the end of the row
+            // if its not the end of the row connect the next one
             if( i % this.numberOfColumns != 0 ) {
-                let right = (i + 1).toString();
-                edges.push(
-                    {
-                        data: {
-                            // I guess nodes and edges share the same IDs? Prefixing with 0 is needed for the first 10 IDs
-                            id: (i < 10 ? '0'+current : current) + (i < 10 ? '0'+right : right),
-                            source: current,
-                            target: right,
-                            weight: 5,
-                        }
-                    }
-                );
+                edges.push( createEdge(i, i+1) );
             }
 
-            // add the nodes underneath unless index is on the last row
+            // add all the nodes underneath unless index is on the last row
             if( i <= this.numberOfNodes - this.numberOfColumns) {
-                let bottom = (i+this.numberOfColumns).toString();
-                edges.push(
-                    {
-                        data: {
-                            id: (i < 10 ? '0'+current : current) + bottom,
-                            source: current,
-                            target: bottom,
-                            weight: 5,
-                        }
-                    }
-                );
+                edges.push( createEdge(i, i+this.numberOfColumns));
+                if( i % this.numberOfColumns != 0 ){
+                    edges.push( createEdge(i, i + this.numberOfColumns + 1));
+                }
+                if( (i-1) % this.numberOfColumns != 0){
+                    edges.push( createEdge(i, i + this.numberOfColumns - 1));
+                }
             }
         }
         return edges;
@@ -140,7 +144,7 @@ export default class Graph {
             element.addClass('highlighted');
             if(x < path.length - 1){
                 x++;
-                setTimeout(highlightNextEle, 500);
+                setTimeout(highlightNextEle, 1000);
             }
         };
         highlightNextEle();

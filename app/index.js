@@ -6,5 +6,5 @@ main();
 
 function main() {
     const graph = new Graph();
-    graph.drawPath('#d', '#g');
+    graph.runWithoutAggregation();
 }
