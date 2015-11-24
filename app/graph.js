@@ -77,23 +77,25 @@ export default class Graph {
         const aggs = this.cy.$('.aggregator, .sink');
 
         // generate new messages
-        for( var i = 0; i < 30; i++ ){
+        for( var i = 0; i < 30; i++ ) {
             let random = Math.floor((Math.random() * 100) + 1);
-            let dijkstra = this.cy.elements().dijkstra('#' + random.toString(), function(){
+            let dijkstra = this.cy.elements().dijkstra('#' + random.toString(), function () {
                 return this.data('weight');
             });
 
             let closest = aggs[0];
-            for( var j = 1; j < aggs.length; j++){
-                if( dijkstra.distanceTo(closest) > dijkstra.distanceTo( aggs[j] )){
+            for(var j = 1; j < aggs.length; j++) {
+                if (dijkstra.distanceTo(closest) > dijkstra.distanceTo(aggs[j])) {
                     closest = aggs[j];
                 }
             }
-            this.drawPath( '#' + random.toString(), '#' + closest.id(), 'highlight', () => {
-                this.drawPath('#' + this.cy.$('#25').id(), '#' + this.sinkNode.toString(), 'highlight-red');
+            this.drawPath('#' + random.toString(), '#' + closest.id(), 'highlight', () => {
+                let aggregs = this.cy.$('.aggregator');
+                for(var k = 0; k < aggregs.length; k++) {
+                    this.drawPath('#' + aggregs[k].id(), '#' + this.sinkNode.toString(), 'highlight-red');
+                }
             });
         }
-
     }
 
     /* Helper method to draw a path
