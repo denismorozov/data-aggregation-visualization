@@ -32,9 +32,15 @@ export default class Graph {
                     'width': 4,
                     'line-color': '#ddd',
                 })
-                .selector('.highlighted').css({
+                .selector('.highlight').css({
                     'background-color': '#61bffc',
                     'line-color': '#61bffc',
+                    'transition-property': 'background-color, line-color',
+                    'transition-duration': '0.5s',
+                })
+                .selector('.highlight-red').css({
+                    'background-color': 'crimson',
+                    'line-color': 'crimson',
                     'transition-property': 'background-color, line-color',
                     'transition-duration': '0.5s',
                 }),
@@ -83,27 +89,33 @@ export default class Graph {
                     closest = aggs[j];
                 }
             }
-            this.drawPath( '#' + random.toString(), '#' + closest.id());
+            this.drawPath( '#' + random.toString(), '#' + closest.id(), 'highlight', () => {
+                this.drawPath('#' + this.cy.$('#25').id(), '#' + this.sinkNode.toString(), 'highlight-red');
+            });
         }
-        setTimeout( this.drawPath('#' + this.cy.$('#25').id(), '#' + this.sinkNode.toString()), 10000);
+
     }
 
     /* Helper method to draw a path */
-    drawPath(from, to){
+    drawPath(from, to, newClass, callback){
+        newClass = newClass || 'highlight';
         var dijkstra = this.cy.elements().dijkstra(from,function(){
             return this.data('weight');
         }, false );
         var path = dijkstra.pathTo( this.cy.$(to) );
-        var x=0;
+        var i = 0;
         // doesn't check for end
         var highlightNextEle = function(){
-            var element = path[x];
+            let element = path[i];
             if(!element.hasClass('aggregator') && !element.hasClass('sink')){
-                element.addClass('highlighted');
+                element.addClass(newClass);
             }
-            if(x < path.length - 2){
-                x++;
+            if(i < path.length - 2){
+                i++;
                 setTimeout(highlightNextEle, 1000);
+            }
+            else if( callback && typeof(callback) === "function" ){
+                setTimeout(callback, 5000);
             }
         };
         highlightNextEle();
