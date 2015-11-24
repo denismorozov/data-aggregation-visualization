@@ -18,7 +18,7 @@ export default class Graph {
             style: cytoscape.stylesheet()
                 .selector('node').css({
                     // nice for debugging the layout
-                    // 'content': 'data(id)'
+                    'content': 'data(id)'
                 })
                 .selector('.sink').css({
                     'label': 'Sink',
@@ -55,15 +55,38 @@ export default class Graph {
 
     /* Generate 15 random messages being sent directly to the sink */
     runWithoutAggregation(){
-        for( var i = 1; i < 15; i++ ){
+        for( var i = 0; i < 15; i++ ){
             let random = Math.floor((Math.random() * 100) + 1);
             this.drawPath( '#' + random.toString(), '#' + this.sinkNode.toString());
         }
     };
 
+    /* Generates 15 random messages and sends them to closest aggregators */
     runWithAggregation(){
-        //
-    };
+        // select aggregators, hardcoded for now
+        this.cy.$('#25').addClass('aggregator');
+        this.cy.$('#31').addClass('aggregator');
+        this.cy.$('#69').addClass('aggregator');
+        this.cy.$('#75').addClass('aggregator');
+        const aggs = this.cy.$('.aggregator, .sink');
+
+        // generate new messages
+        for( var i = 0; i < 15; i++ ){
+            let random = Math.floor((Math.random() * 100) + 1);
+            let dijkstra = this.cy.elements().dijkstra('#' + random.toString(), function(){
+                return this.data('weight');
+            });
+
+            let closest = aggs[0];
+            for( var j = 1; j < aggs.length; j++){
+                if( dijkstra.distanceTo(closest) > dijkstra.distanceTo( aggs[j] )){
+                    closest = aggs[j];
+                }
+            }
+            this.drawPath( '#' + random.toString(), '#' + closest.id());
+        }
+    }
+
     /* Create a grid of nodes and makes the center one the sink
     */
     createNodes(){
@@ -87,7 +110,7 @@ export default class Graph {
         {
             data:
             {
-                // this increment is needed to have the proper index
+                // this increment is needed to have the proper id
                 id: (++this.sinkNode).toString(),
             },
             classes: 'sink',
@@ -135,14 +158,14 @@ export default class Graph {
     drawPath(from, to){
         var dijkstra = this.cy.elements().dijkstra(from,function(){
             return this.data('weight');
-        },false);
+        }, false );
         var path = dijkstra.pathTo( this.cy.$(to) );
         var x=0;
         // doesn't check for end
         var highlightNextEle = function(){
             var element = path[x];
             element.addClass('highlighted');
-            if(x < path.length - 1){
+            if(x < path.length - 2){
                 x++;
                 setTimeout(highlightNextEle, 1000);
             }

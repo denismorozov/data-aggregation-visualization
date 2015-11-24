@@ -6,5 +6,6 @@ main();
 
 function main() {
     const graph = new Graph();
-    graph.runWithoutAggregation();
+    //graph.runWithoutAggregation();
+    graph.runWithAggregation();
 }
