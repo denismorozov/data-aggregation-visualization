@@ -88,6 +88,7 @@ export default class Graph {
                 }),
             elements: this.data,
             zoomingEnabled: false,
+            userPanningEnabled: false,
             layout: {
                 name: 'grid',
                 fit: true,
