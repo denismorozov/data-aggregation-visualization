@@ -12,6 +12,6 @@ function main() {
         graph.runWithAggregation();
     };
     document.getElementById("reset").onclick = () => {
-        graph = new Graph();
+        graph.reset();
     };
 }

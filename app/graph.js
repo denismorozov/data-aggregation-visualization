@@ -1,7 +1,7 @@
 import cytoscape from 'cytoscape';
 
 export default class Graph {
-    constructor(){
+    constructor() {
         // Set node and edge data for the graph
         this.numberOfColumns = 11;
         this.numberOfRows = 9;
@@ -53,23 +53,24 @@ export default class Graph {
                 rows: this.numberOfRows,
                 columns: this.numberOfColumns,
             },
-            ready: function(){
+            ready: function() {
                 //window.Graph.cy = this;
             }
         });
     }
 
     /* Generate 15 random messages being sent directly to the sink */
-    runWithoutAggregation(){
-        for( var i = 0; i < 15; i++ ){
-            let random = Math.floor((Math.random() * 100) + 1);
+    runWithoutAggregation() {
+        for( var i = 0; i < 15; i++ ) {
+            let random = Math.floor(Math.random() * 100 + 1);
             this.drawPath( '#' + random.toString(), '#' + this.sinkNode.toString());
         }
     };
 
     /* Generates 15 random messages and sends them to closest aggregators */
-    runWithAggregation(){
+    runWithAggregation() {
         // select aggregators, hardcoded for now
+        // an actual algorithm for selecting them would be cool
         this.cy.$('#25').addClass('aggregator');
         this.cy.$('#31').addClass('aggregator');
         this.cy.$('#69').addClass('aggregator');
@@ -89,6 +90,7 @@ export default class Graph {
                     closest = aggs[j];
                 }
             }
+            // todo: Check if a data aggregator actually received a message
             this.drawPath('#' + random.toString(), '#' + closest.id(), 'highlight', () => {
                 for(var k = 0; k < aggs.length; k++) {
                     if(!aggs[k].hasClass('sink')){
@@ -99,25 +101,38 @@ export default class Graph {
         }
     }
 
+    reset() {
+        this.cy.layout(
+            {
+                name: 'grid',
+                fit: true,
+                padding: 10,
+                rows: this.numberOfRows,
+                columns: this.numberOfColumns
+            }
+        );
+    }
+
     /* Helper method to draw a path
     */
-    drawPath(from, to, newClass, callback){
+    drawPath(from, to, newClass, callback) {
+        // set default CSS to be added to draw the path
         newClass = newClass || 'highlight';
-        var dijkstra = this.cy.elements().dijkstra(from,function(){
+        var dijkstra = this.cy.elements().dijkstra(from, function() {
             return this.data('weight');
         }, false );
         var path = dijkstra.pathTo( this.cy.$(to) );
         var i = 0;
         var highlightNextEle = function(){
             let element = path[i];
-            if(!element.hasClass('aggregator') && !element.hasClass('sink')){
+            if(!element.hasClass('aggregator') && !element.hasClass('sink')) {
                 element.addClass(newClass);
             }
             if(i < path.length - 2){
                 i++;
                 setTimeout(highlightNextEle, 750);
             }
-            else if( callback && typeof(callback) === "function" ){
+            else if( callback && typeof(callback) === "function" ) {
                 setTimeout(callback, 3000);
             }
         };
@@ -126,19 +141,16 @@ export default class Graph {
 
     /* Create a grid of nodes and makes the center one the sink
     */
-    createNodes(){
+    createNodes() {
         var nodes = [];
-        for(var i = 1; i <= this.numberOfNodes; i++)
-        {
-            nodes.push(
+        for(var i = 1; i <= this.numberOfNodes; i++) {
+            nodes.push({
+                data:
                 {
-                    data:
-                    {
-                        id: i.toString(),
-                        //parent: '',
-                    }
+                    id: i.toString(),
+                    //parent: '',
                 }
-            );
+            });
         }
 
         // set the sink node which would be in the middle of the grid by default
@@ -150,14 +162,14 @@ export default class Graph {
                 // this increment is needed to have the proper id
                 id: (++this.sinkNode).toString(),
             },
-            classes: 'sink',
+            classes: 'sink'
         };
         return nodes;
     }
 
     /* Connects adjacent nodes together in the grid */
-    createEdges(){
-        function createEdge(from, to){
+    createEdges() {
+        function createEdge(from, to) {
             let fromID = from.toString();
             let toID = to.toString();
             return {
@@ -170,8 +182,7 @@ export default class Graph {
         }
 
         var edges = [];
-        for(var i = 1; i < this.numberOfNodes; i++)
-        {
+        for(var i = 1; i < this.numberOfNodes; i++) {
             // if its not the end of the row connect the next one
             if( i % this.numberOfColumns != 0 ) {
                 edges.push( createEdge(i, i+1) );
@@ -180,10 +191,10 @@ export default class Graph {
             // add all the nodes underneath unless index is on the last row
             if( i <= this.numberOfNodes - this.numberOfColumns) {
                 edges.push( createEdge(i, i+this.numberOfColumns));
-                if( i % this.numberOfColumns != 0 ){
+                if( i % this.numberOfColumns != 0 ) {
                     edges.push( createEdge(i, i + this.numberOfColumns + 1));
                 }
-                if( (i-1) % this.numberOfColumns != 0){
+                if( (i-1) % this.numberOfColumns != 0) {
                     edges.push( createEdge(i, i + this.numberOfColumns - 1));
                 }
             }

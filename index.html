@@ -22,22 +22,23 @@
     <h1>Data Aggregation Visualization</h1>
     <section class="row">
     <div class="col-md-10 col-md-offset-1">
-      <p> Computer Networks project by Denis Morozov. This visualization demonstrates simple data aggregation in wireless sensor networks.
+      <!-- Project description/introduction -->
+      <p> This visualization demonstrates simple data aggregation in wireless sensor networks.
       Both simulations generate 15 random events and show how the information is transmitted back to the sink node. The aggregated data is displayed in
       red while regular transmissions between sensors are displayed in light blue.</p>
     </div>
     </section>
     <nav class="row">
+      <!-- Simulator controls -->
       <button id="runAggregation" class="btn btn-primary">Run with aggregation</button>
       <button id="runNoAggregation" class="btn btn-primary">Run without aggregation</button>
-      <a class="btn btn-danger" href="/">Reset</a>
+      <a id="reset" class="btn btn-danger" href="#">Reset</a>
     </nav>
   </header>
   <main class="container">
-
-
-  <section id="graph"></section>
-  <script src="bundle.js"></script>
+    <!-- Render the Cytoscape.js graph here -->
+    <section id="graph"></section>
+    <script src="bundle.js"></script>
   </main>
 </body>
 </html>
